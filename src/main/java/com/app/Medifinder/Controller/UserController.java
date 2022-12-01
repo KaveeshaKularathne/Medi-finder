@@ -1,6 +1,7 @@
 package com.app.Medifinder.Controller;
 import com.app.Medifinder.Entity.User;
 import com.app.Medifinder.Service.UserService;
+import com.app.Medifinder.Service.VerificationTokenService;
 import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,14 @@ import java.util.List;
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final UserService userService;
+    private final VerificationTokenService verificationTokenService;
     @Autowired
-    private UserService userService;
-    @PostMapping("/registeruser")
+    public UserController(UserService userService,VerificationTokenService verificationTokenService){
+        this.userService=userService;
+        this.verificationTokenService=verificationTokenService;
+    }
+    @PostMapping("/registration")
     @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"Accept"})
     public User registerUser(@RequestBody User user,String siteURL, HttpServletRequest request)
             throws UnsupportedOperationException, MessagingException, Exception {
@@ -37,6 +43,7 @@ public class UserController {
         User userObj = null;
         userObj=userService.saveUser(user);
         logger.info("User registered successfully");
+        userService.register();
         return userObj;
     }
     @PostMapping("/login")
@@ -53,6 +60,11 @@ public class UserController {
             throw new Exception("invalid user credentials..");
         }
         return userObj;
+    }
+    @GetMapping("/registeration-verify")
+    public String activation(@RequestParam("token")String token,Model model){
+
+        return "";
     }
 
 

@@ -18,9 +18,12 @@ import java.util.UUID;
 public class UserService {
     private final VerificationTokenService verificationTokenService;
 
+    private EmailService emailService;
     @Autowired
-    public UserService(VerificationTokenService verificationTokenService){
+    public UserService(VerificationTokenService verificationTokenService,
+                       EmailService emailService){
         this.verificationTokenService=verificationTokenService;
+        this.emailService=emailService;
     }
 
     @Autowired
@@ -38,12 +41,14 @@ public class UserService {
     public User register(){
         User user=new User();
         user.setEnabled(false);
+
         //return saveUser(user);
         Optional<User>saved=Optional.of(saveUser(user));
         saved.ifPresent(user1 -> {
             try {
                 String token= UUID.randomUUID().toString();
                 verificationTokenService.save(saved.get(),token);
+                emailService.sendHtmlMail(user);
             }catch (Exception e){
                 e.printStackTrace();
             }
