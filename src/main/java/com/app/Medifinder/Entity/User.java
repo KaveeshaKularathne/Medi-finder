@@ -14,6 +14,7 @@ public class User {
         private String longitude;
         private String latitude;
         private String user_role;
+        private boolean Enabled;
 
 
 
@@ -28,6 +29,7 @@ public class User {
             this.longitude = longitude;
             this.latitude = latitude;
             this.user_role = user_role;
+
 
 
         }
@@ -88,9 +90,11 @@ public class User {
             this.user_role = user_role;
         }
 
+    public boolean isEnabled() {
+        return Enabled;
+    }
 
-
-
-
-
+    public void setEnabled(boolean enabled) {
+        Enabled = enabled;
+    }
 }

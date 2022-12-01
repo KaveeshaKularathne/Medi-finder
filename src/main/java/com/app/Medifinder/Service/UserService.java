@@ -11,9 +11,18 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
+    private final VerificationTokenService verificationTokenService;
+
+    @Autowired
+    public UserService(VerificationTokenService verificationTokenService){
+        this.verificationTokenService=verificationTokenService;
+    }
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -25,5 +34,20 @@ public class UserService {
     }
     public User fetchUserByEmailIdAndPassword(String email,String password){
         return userRepository.findByEmailIdAndPassword(email, password);
+    }
+    public User register(){
+        User user=new User();
+        user.setEnabled(false);
+        //return saveUser(user);
+        Optional<User>saved=Optional.of(saveUser(user));
+        saved.ifPresent(user1 -> {
+            try {
+                String token= UUID.randomUUID().toString();
+                verificationTokenService.save(saved.get(),token);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        });
+        return saved.get();
     }
 }
