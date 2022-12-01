@@ -15,14 +15,11 @@ public class User {
         private String latitude;
         private String user_role;
 
-        private boolean isEnabled;
 
-        @Column (updatable = false)
-        private String verification_code;
 
     public User() {}
 
-        public User(int user_id, String emailId, String username, String password, String longitude, String latitude, String user_role,boolean isEnabled, String verification_code) {
+        public User(int user_id, String emailId, String username, String password, String longitude, String latitude, String user_role) {
             super();
             this.user_id = user_id;
             this.emailId = emailId;
@@ -31,8 +28,6 @@ public class User {
             this.longitude = longitude;
             this.latitude = latitude;
             this.user_role = user_role;
-            this.isEnabled = isEnabled;
-            this.verification_code = verification_code;
 
 
         }
@@ -93,19 +88,9 @@ public class User {
             this.user_role = user_role;
         }
 
-        public String getVerification_code() {
-        return verification_code;}
-
-        public void setVerification_code(String verification_code) {
-        this.verification_code = verification_code;}
 
 
-    public boolean isEnabled() {
-        return isEnabled();
-    }
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
-    }
+
 
 
 }

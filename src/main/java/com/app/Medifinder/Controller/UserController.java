@@ -15,20 +15,19 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Controller
+@RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private UserService userService;
-
     @PostMapping("/registeruser")
     @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"Accept"})
     public User registerUser(@RequestBody User user,String siteURL, HttpServletRequest request)
             throws UnsupportedOperationException, MessagingException, Exception {
-        String tempEmailId = user.getEmailId();
 
+        String tempEmailId = user.getEmailId();
         if (tempEmailId != null && !"".equals(tempEmailId)) {
             User userObj = userService.fetchUserByEmailId(tempEmailId);
             if (userObj != null) {
@@ -36,16 +35,10 @@ public class UserController {
             }
         }
         User userObj = null;
-        userObj = userService.saveUser(user);
+        userObj=userService.saveUser(user);
         logger.info("User registered successfully");
-
         return userObj;
     }
-
-
-
-
-
     @PostMapping("/login")
     @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"Accept"})
      public User loginUser(@RequestBody User user) throws Exception {
