@@ -1,8 +1,9 @@
 package com.app.Medifinder.Controller;
 import com.app.Medifinder.Entity.User;
+import com.app.Medifinder.Entity.VerificationToken;
 import com.app.Medifinder.Service.UserService;
 import com.app.Medifinder.Service.VerificationTokenService;
-import net.bytebuddy.utility.RandomString;
+import com.app.Medifinder.site.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -43,7 +45,7 @@ public class UserController {
         User userObj = null;
         userObj=userService.saveUser(user);
         logger.info("User registered successfully");
-        userService.register();
+        userService.register(siteURL);
         return userObj;
     }
     @PostMapping("/login")
@@ -59,15 +61,33 @@ public class UserController {
         if (userObj == null) {
             throw new Exception("invalid user credentials..");
         }
+
         return userObj;
     }
     @GetMapping("/registeration-verify")
     public String activation(@RequestParam("token")String token,Model model){
 
-        return "";
+        VerificationToken verificationToken=verificationTokenService.findByToken(token);
+        if (verificationToken==null){
+            model.addAttribute("message","Your verification token is invalid ");
+        }else{
+            User user=verificationToken.getUser();
+            if (!user.isEnabled()){
+                Timestamp currentTimestamp=new Timestamp(System.currentTimeMillis());
+                if (verificationToken.getExpiryDate().before(currentTimestamp)){
+                    model.addAttribute("message","Your verification token has expired");
+                }else {
+                    user.setEnabled(true);
+                    userService.saveUser(user);
+                    model.addAttribute("message","Your account is successfully activated");
+                }
+            }else {
+                model.addAttribute("message","Your account is already activated");
+            }
+        }
+        return "registeration-verify";
+        //return "fail";
     }
-
-
 }
 
 

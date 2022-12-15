@@ -1,13 +1,17 @@
 package com.app.Medifinder.Entity;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
+import javax.persistence.*;
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name="\"User\"")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
         private int user_id;
+
         private  String emailId;
         private String username;
         private String password;

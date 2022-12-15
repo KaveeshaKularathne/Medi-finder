@@ -1,4 +1,5 @@
 package com.app.Medifinder.Service;
+import com.app.Medifinder.site.Utility;
 import net.bytebuddy.utility.RandomString;
 import com.app.Medifinder.Entity.User;
 import com.app.Medifinder.Repository.UserRepository;
@@ -17,19 +18,17 @@ import java.util.UUID;
 @Service
 public class UserService {
     private final VerificationTokenService verificationTokenService;
+    private final UserRepository userRepository;
 
     private EmailService emailService;
     @Autowired
     public UserService(VerificationTokenService verificationTokenService,
-                       EmailService emailService){
+                       EmailService emailService,UserRepository userRepository){
         this.verificationTokenService=verificationTokenService;
         this.emailService=emailService;
+        this.userRepository=userRepository;
     }
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private JavaMailSender mailSender;
     public User saveUser(User user){
         return userRepository.save(user);}
     public User fetchUserByEmailId(String email) {
@@ -38,7 +37,7 @@ public class UserService {
     public User fetchUserByEmailIdAndPassword(String email,String password){
         return userRepository.findByEmailIdAndPassword(email, password);
     }
-    public User register(){
+    public User register(String siteURL){
         User user=new User();
         user.setEnabled(false);
 
@@ -48,7 +47,8 @@ public class UserService {
             try {
                 String token= UUID.randomUUID().toString();
                 verificationTokenService.save(saved.get(),token);
-                emailService.sendHtmlMail(user);
+
+                emailService.sendMail(user,siteURL);
             }catch (Exception e){
                 e.printStackTrace();
             }
